@@ -13,13 +13,6 @@ def make_all_instances_box(self):
     instances_box = toga.Box(style=Pack(direction=COLUMN))
     top_box = toga.Box(style=Pack(direction=COLUMN))
 
-
-    self.instances = [
-        {'id': 1, 'name': 'Instance 1'},
-        {'id': 2, 'name': 'Instance 2'},
-        {'id': 3, 'name': 'Instance 3'}
-    ]        
-        
     create_instance_button = toga.Button(
         #instance['name'],
         "Create new instance",
