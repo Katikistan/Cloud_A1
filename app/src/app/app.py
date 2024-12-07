@@ -2,11 +2,12 @@ import httpx
 import toga
 from toga.style import Pack
 from toga.style.pack import COLUMN, ROW
-from app.options.login_box import make_login_box
-from app.options.logout_box import make_logout_box
-from app.options.all_instances_box import make_all_instances_box
-from app.options.instance_box import make_instance_box
-from app.services.dcr_active_repository import check_login_from_dcr, DcrActiveRepository, DcrUser
+from helloworld.options.login_box import make_login_box
+from helloworld.options.logout_box import make_logout_box
+from helloworld.options.all_instances_box import make_all_instances_box
+from helloworld.options.instance_box import make_instance_box
+from helloworld.services.dcr_active_repository import check_login_from_dcr, DcrActiveRepository, DcrUser
+
 class CloudApp(toga.App):
 
     def startup(self):
@@ -16,7 +17,7 @@ class CloudApp(toga.App):
         logout_box = make_logout_box(self)
 
         
-        option_container = toga.OptionContainer(
+        self.option_container = toga.OptionContainer(
             content=[
                 toga.OptionItem("Login", login_box),
                 toga.OptionItem("All instances", all_instances_box),
@@ -27,11 +28,11 @@ class CloudApp(toga.App):
             style=Pack(direction=COLUMN))
 
         self.main_window = toga.MainWindow(title=self.formal_name)
-        self.main_window.content = option_container
-        self.main_window.show()
+        self.main_window.content = self.option_container
         self.option_container.content['Logout'].enabled = False
         self.option_container.content['All instances'].enabled = False
         self.option_container.content['Instance run'].enabled = False
+        self.main_window.show()
 
     async def option_item_changed(self,widget):
         print('[i] You have selected another Option Item!')
