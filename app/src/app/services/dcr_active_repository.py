@@ -132,7 +132,7 @@ async def check_login_from_dcr(username, password):
 
 
 async def main():
-    graph_id= # TODO: place your own graph id
+    graph_id = 1986525
     check_login = False
     while check_login == False:
         username = input("Enter you DCR portal username: ")
