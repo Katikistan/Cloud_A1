@@ -7,6 +7,7 @@ from app.options.logout_box import make_logout_box
 from app.options.all_instances_box import make_all_instances_box
 from app.options.instance_box import make_instance_box
 from app.services.dcr_active_repository import check_login_from_dcr, DcrActiveRepository, DcrUser
+from services import database_connection as dbc
 
 class CloudApp(toga.App):
     graph_id = 1986525
@@ -48,12 +49,13 @@ class CloudApp(toga.App):
         connected = await check_login_from_dcr(self.username_input.value,self.password_input.value)
         if connected:
             self.dcr_user = DcrUser(self.username_input.value,self.password_input.value)
+            self.user.role = dbc.get_dcr_role(email=self.user.email)
             self.dcr_ar = DcrActiveRepository(self.dcr_user)
             self.option_container.content['Logout'].enabled = True
             self.option_container.content['All instances'].enabled = True
             self.option_container.content['Instance run'].enabled = True
             # self.option_container.content['Login'].enabled = False 
-
+            print(f'[i] Role: {self.user.role}')
             print(f"[i] You are logged in as {self.username_input.value}!")
         else:
             print(f"[x] Login failed!")
