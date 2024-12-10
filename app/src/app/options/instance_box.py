@@ -78,7 +78,8 @@ async def make_instance_box(self):
                 text=text,
                 style=Pack(padding=5, color=color),
                 id=event.id,
-                on_press=btn_enabled
+                on_press=self.execute_event,
+                enabled = btn_enabled,
             )
             event_box.add(event_button)
     event_container.content = event_box

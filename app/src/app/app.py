@@ -52,6 +52,7 @@ class CloudApp(toga.App):
         if connected:
             self.dcr_user = DcrUser(self.username_input.value,self.password_input.value)
             self.dcr_ar = DcrActiveRepository(self.dcr_user)
+            make_logout_box(self)
 
             self.option_container.content['All instances'].enabled = True
             self.option_container.content['Instance run'].enabled = True
@@ -69,8 +70,8 @@ class CloudApp(toga.App):
         print("You want to logout!")
         self.username_input.value = None
         self.password_input.value = None
-        self.option_container.current_tab = 'Login'
         self.option_container.content['Login'].enabled = True
+        self.option_container.current_tab = 'Login'
         self.option_container.content['Logout'].enabled = False
         self.option_container.content['All instances'].enabled = False
         self.option_container.content['Instance run'].enabled = False
