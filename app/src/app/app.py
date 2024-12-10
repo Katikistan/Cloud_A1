@@ -80,9 +80,18 @@ class CloudApp(toga.App):
     async def role_changed(self, widget):
             self.selected_role_item = self.role_selection.value
             print(f"[i] You changed the role to {self.selected_role_item}!")
+            self.dcr_user.role = self.selected_role_item
+            await self.show_instance_box()
             
     async def execute_event(self, widget):
-        print(f"[i] You want to execute event: {widget.id}")
+        print(f"[i] You want to execute {widget.id}")
+        event_id = widget.id
+        status_code = await self.dcr_ar.execute_event(self.graph_id,self.current_instance_id,event_id)
+        if status_code == 204:
+            print(f"[i] Successfully executed event with id: {event_id}")
+        else:
+            print(f"[x] Failed to execute event with id: {event_id} status code: {status_code}")
+        await self.show_instance_box()
 
     async def show_instance(self, widget):
         print(f"[i] You want to show {widget.id}")
@@ -108,7 +117,7 @@ class CloudApp(toga.App):
         print(f"[i] You want to delete {widget.id[1:]}")
         instance_id = widget.id[1:]
         status_code = await self.dcr_ar.delete_instance(self.graph_id,instance_id)
-        if status_code == 200:
+        if status_code == 204:
             print(f"[i] Successfully deleted instance with id: {instance_id}")
         else:
             print(f"[x] Failed to delete instance with id: {instance_id} status code: {status_code}")
