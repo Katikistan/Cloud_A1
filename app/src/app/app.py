@@ -13,12 +13,13 @@ class CloudApp(toga.App):
     dcr_ar = None 
 
     def startup(self):
-        self.login_box = make_login_box(self)
+        self.login_box = toga.Box(style=Pack(direction=COLUMN))
         self.instances = {}        
-        self.all_instances_box = make_all_instances_box(self)
-        self.instance_box = make_instance_box(self)
-        self.logout_box = make_logout_box(self)
+        self.all_instances_box = toga.Box(style=Pack(direction=COLUMN,flex=1))
+        self.instance_box = toga.Box(style=Pack(direction=COLUMN, flex=1))
+        self.logout_box = toga.Box(style=Pack(direction=COLUMN, flex=1))
 
+        make_login_box(self)
         
         self.option_container = toga.OptionContainer(
             content=[
@@ -33,6 +34,7 @@ class CloudApp(toga.App):
         self.main_window = toga.MainWindow(title=self.formal_name)
         self.main_window.content = self.option_container
         self.main_window.show()
+
         self.option_container.content['All instances'].enabled = False  
         self.option_container.content['Instance run'].enabled = False
         self.option_container.content['Logout'].enabled = False
@@ -46,17 +48,22 @@ class CloudApp(toga.App):
 
     async def login_handler(self, widget):
         connected = await check_login_from_dcr(self.username_input.value,self.password_input.value)
+
         if connected:
             self.dcr_user = DcrUser(self.username_input.value,self.password_input.value)
             self.dcr_ar = DcrActiveRepository(self.dcr_user)
-            self.option_container.content['Logout'].enabled = True
+
             self.option_container.content['All instances'].enabled = True
             self.option_container.content['Instance run'].enabled = True
-            # self.option_container.content['Login'].enabled = False 
-
+            self.option_container.content['Logout'].enabled = True
+            self.option_container.current_tab = 'All instances'
+            self.option_container.content['Login'].enabled = False 
+                
             print(f"[i] You are logged in as {self.username_input.value}!")
         else:
             print(f"[x] Login failed!")
+            
+        # await make_login_box(self)
 
     async def logout_handler(self, widget):
         print("You want to logout!")
@@ -81,22 +88,20 @@ class CloudApp(toga.App):
         self.current_instance_id = widget.id
         self.option_container.current_tab = "Instance run"
         await self.show_instance_box()
-
-
-    async def show_instances_box(self):
-        self.all_instances_box.clear()
-        
-        self.instances = {}        
-        dcr_ar_instaces = await self.dcr_ar.get_instances(self.graph_id)
-        print(f"[i] Found {len(dcr_ar_instaces)} instances")
-
-        if len(dcr_ar_instaces) > 0:
-            self.instances = dcr_ar_instaces
-        
-        self.all_instances_box = make_all_instances_box(self)
-        
-        self.all_instances_box.refresh()
     
+    async def show_all_instance(self, widget):
+        print(f"[i] You want to show {widget.id}")
+        self.current_instance_id = widget.id
+        self.option_container.current_tab = "All instances"
+        await self.all_instances_box()
+
+    #del 1, C3
+    async def show_instances_box(self):
+        await make_all_instances_box(self)
+
+    #cel 1, C5
+    async def show_instance_box(self):
+        await make_instance_box(self)
     
     async def delete_instance_by_id(self, widget):
         print(f"[i] You want to delete {widget.id[1:]}")
@@ -116,11 +121,12 @@ class CloudApp(toga.App):
     async def delete_all_by_id(self, widget):
         print(f"[i] You want to delete all instances!")
         for instance in self.instances:
-            status_code = await self.dcr_ar.delete_instance(self.graph_id,instance['id'])
-            if status_code == 200:
-                print(f"[i] Successfully deleted instance with id: {instance['id']}")
+            status_code = await self.dcr_ar.delete_instance(self.graph_id,int(instance))
+            if status_code == 204:
+                print(f"[i] Successfully deleted instance with id: {instance}")
             else:
-                print(f"[x] Failed to delete instance with id: {instance['id']} status code: {status_code}")
+                print(f"[x] Failed to delete instance with id: {instance} status code: {status_code}")
+
         await self.show_instances_box()
 
 def greeting(name):
