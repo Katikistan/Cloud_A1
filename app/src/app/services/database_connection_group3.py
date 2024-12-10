@@ -1,10 +1,13 @@
 from mysql.connector import connect
+#from mysql import connect
 import mysql
 
 db_password = 'Gr3LMO2024'
 sql_query_template = {}
-sql_query_template['get_dcr_role'] = f"""SELECT Role FROM DCRUsers WHERE
-Email = %(email)s"""
+sql_query_template['get_dcr_role'] = f"""
+SELECT Role FROM DCRUsers 
+WHERE Email = %(email)s"""
+
 #TODO: fill in these templates with the right SQL query
 # Get DCR Role for a specific user
 # Get DCR Role for a specific user
@@ -50,7 +53,7 @@ VALUES (%(email)s, %(id)s);
 """
 
 # Update an instance’s state
-sql_query_template['update_instance'] = f"""
+sql_query_template['update_instance'] = f""" 
 UPDATE Instances 
 SET IsInValidState = %(valid)s 
 WHERE InstanceID = %(id)s;
@@ -66,7 +69,7 @@ WHERE InstanceID = %(id)s;
 sql_query_template['delete_instance'] = f"""
 DELETE FROM Instances 
 WHERE InstanceID = %(id)s;
-"""
+"""    
 
 def db_connect():
     from pathlib import Path
@@ -77,7 +80,8 @@ def db_connect():
                                   host="group32024.mysql.database.azure.com",
                                   port=3306, 
                                   database="tasklistdatabase3", 
-                                  ssl_ca=cert_filepath)
+                                  ssl_ca=cert_filepath,
+                                  ssl_verify_cert=True)
     print(f'[i] cnx is connected: {cnx.is_connected()}')
     return cnx
 
